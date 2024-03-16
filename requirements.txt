@@ -1,0 +1,11 @@
+flask
+flask_sqlalchemy
+flask_restful
+flask_login
+pyjwt==2.0.0
+uuid
+redis
+celery[redis]
+requests
+Flask-Caching
+redis-server

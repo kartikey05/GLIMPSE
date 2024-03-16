@@ -1,0 +1,363 @@
+openapi: 3.0.3
+info:
+  title: Glimpse - OpenAPI 3.0
+  description: This is a social media blogging site.
+  contact:
+    email: support@example.com
+  version: 1.0.11
+servers:
+  - url: 127.0.0.1:5000
+paths:
+  /api/login/{username}/{password}:
+    description: Get Authentication token for login
+    get:
+      operationId: "GetAuthTokenByUsernamePassword"
+      description: Operation to get a user details
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            example: test
+        - in: path
+          name: password
+          required: true
+          schema:
+            type: string
+            example: password
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: user object
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 5
+                  username:
+                    type: string
+                    example: test
+                  email:
+                    type: string
+                    example: test@example.com
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.
+      tags:
+        - Login
+  /api/user/{username}:
+    description: End point to read, update and delete a user resource with username.
+    put:
+      operationId: "UpdateUsername"
+      tags:
+        - User
+      description: Operation to update the user detail
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            example: test
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: test@example.org
+      responses:
+        '200':
+          description: Successfully updated.
+          content:
+            application/json:
+              schema:
+                title: user object
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    example: 5
+                  username:
+                    type: string
+                    example: test
+                  email:
+                    type: string
+                    example: test@example.org
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                  error_message:
+                    type: string
+        '404':
+          description: Resource you requested to update not found.
+        '500':
+          description: Internal Server Error.
+    delete:
+      operationId: "DeleteUser"
+      tags:
+        - User
+      description: Operation to delete the user
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            example: raj
+      responses:
+        '200':
+          description: Successfully Deleted.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                  error_message:
+                    type: string
+        '404':
+          description: user does not exist.
+        '500':
+          description: Internal Server Error.
+  /api/user:
+    description: End point to create a user.
+    get:
+      operationId: "GetUserDetails"
+      tags:
+        - User
+      description: Operation to get a user details
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                title: user object
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 5
+                  username:
+                    type: string
+                    example: test
+                  email:
+                    type: string
+                    example: test@example.com
+        '404':
+          description: Resource not found.
+        '500':
+          description: Internal Server Error.
+    post:
+      operationId: "CreateUser"
+      tags:
+        - User
+      description: Operation to create the user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: user object
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: test
+                email:
+                  type: string
+                  example: test@example.org
+                password:
+                  type: string
+                  example: '123456'
+      responses:
+        '201':
+          description: Successfully Created.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                  error_message:
+                    type: string
+        '409':
+          description: username already exist.
+        '500':
+          description: Internal Server Error
+  /api/post:
+    post:
+      summary: Create a new post
+      security:
+        - jwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The title of the post
+                description:
+                  type: string
+                  description: The description of the post
+                image:
+                  type: string
+                  description: The URL of the image associated with the post
+              required:
+                - title
+                - description
+                - image
+      responses:
+        '201':
+          description: Post created successfully
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+    get:
+      summary: Get all posts
+      responses:
+        '200':
+          description: A list of posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+        '401':
+          description: Unauthorized
+    put:
+      summary: Update a post by ID
+      security:
+        - jwt: []
+      parameters:
+        - in: path
+          name: post_id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the post to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The new title of the post
+                description:
+                  type: string
+                  description: The new description of the post
+                image:
+                  type: string
+                  description: The new URL of the image associated with the post
+            required:
+              - title
+              - description
+              - image
+      responses:
+        '200':
+          description: The updated post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Post not found
+    delete:
+      summary: Delete a post by ID
+      security:
+        - jwt: []
+      parameters:
+        - in: path
+          name: post_id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the post to delete
+      responses:
+        '200':
+          description: Post deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Post not found
+
+  /api/post/<int:post_id>:
+      get:
+        summary: Get a post by ID
+        parameters:
+          - in: path
+            name: post_id
+            schema:
+              type: integer
+            required: true
+            description: The ID of the post to retrieve
+        responses:
+          '200':
+            description: The requested post
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Post'
+          '401':
+            description: Unauthorized
+          '404':
+            description: Post not found
+
+
+
+tags:
+  - name: Login
+    description: Gets authentication token for login
+  - name: User
+    description: Everything related to user eg. CRUD operations
+  
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the post
+        title:
+          type: string
+          description: The title of the post
+        description:
+          type: string
+          description: The description of the post
+        image:
+          type: string
+          description: The URL of the image associated with the post
+

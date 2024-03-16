@@ -1,0 +1,13 @@
+Install MailHog
+sudo apt-get -y install golang-go
+go get github.com/mailhog/MailHog
+
+
+New Webhook
+Create a space in Google chat in Gmail
+go to dropdown > manage apps and integrations > cretae webhook
+
+Terminal Tabs
+Flask, redis, Celery-worker, mailhog, celery-beat, celery run task
+
+mailHog - http://localhost:8025/
